@@ -83,7 +83,6 @@ def main():
             movie = movies[path[i + 1][0]]["title"]
             print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
-
 def shortest_path(source, target):
     """
     Returns the shortest list of (movie_id, person_id) pairs
@@ -93,8 +92,30 @@ def shortest_path(source, target):
     """
 
     # TODO
-    raise NotImplementedError
-
+    source_id = person_id_for_name(source)
+    target_id = person_id_for_name(target)
+    # The first node
+    first_node = Node(source_id, None, None)
+    queue = QueueFrontier()
+    queue.add(first_node)
+    # Store the person id that has already been search
+    checkoverlist = []
+    
+    while not queue.empty():
+        node = queue.remove()
+        checkoverlist.append(node.state)
+        if node.state == target_id:
+            path = []
+            while node.parent is not None:
+                path.append((node.action, node.state))
+                node = node.parent
+            return path[::-1]
+        else:
+            neighbors = neighbors_for_person(node.state)
+            for neighbor_movie_id, neighbor_person_id in neighbors:
+                if neighbor_person_id not in checkoverlist:
+                    queue.add(Node(neighbor_person_id, node, neighbor_movie_id))
+    return None
 
 def person_id_for_name(name):
     """
